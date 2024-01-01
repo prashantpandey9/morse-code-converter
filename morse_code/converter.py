@@ -72,25 +72,38 @@ def text_to_morse(text):
     return morse_code
 
 
+def morse_to_text(morse_code):
+    morse_code = morse_code.strip().split(" ")
+    text = ""
+    for code in morse_code:
+        for key, value in MORSE_CODE_DICT.items():
+            if code == value:
+                text += key
+    return text
+
+
 def play_morse_code(morse_code):
     pygame.init()
     pygame.mixer.init()
 
-    dot_duration = 0.2  # Duration of a dot
-    dash_duration = 3 * dot_duration  # Duration of a dash
+    dot_duration = 300  # Duration of a dot in milliseconds
+    dash_duration = 4 * dot_duration  # Duration of a dash
     space_duration = dot_duration  # Duration of space between words
 
     sound_speed = 20  # Speed of Morse code playback
 
     for symbol in morse_code:
-        print(symbol)
         if symbol == ".":
             pygame.mixer.Sound(DOT_SOUND_FILE).play()
-            time.sleep(dot_duration / sound_speed)
+            pygame.time.wait(int(dot_duration / sound_speed))
         elif symbol == "-":
             pygame.mixer.Sound(DASH_SOUND_FILE).play()
-            time.sleep(dash_duration / sound_speed)
+            pygame.time.wait(int(dash_duration / sound_speed))
         elif symbol == " ":
-            time.sleep(space_duration / sound_speed)
+            pygame.time.wait(int(space_duration / sound_speed))
+
+        # Wait until the current sound finishes playing
+        while pygame.mixer.get_busy():
+            pygame.time.delay(10)
 
     pygame.mixer.quit()
